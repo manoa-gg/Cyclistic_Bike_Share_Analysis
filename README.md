@@ -36,7 +36,7 @@ This project analyzes Cyclistic bike-share usage patterns to understand how casu
 ## How to Use This Repository
 1. **View the Analysis**: Open `cyclistic_analysis.html` for the complete report
 2. **Run the Code**: Open `cyclistic_analysis.Rmd` in RStudio and click "Knit"
-3. **Explore Data**: Check `data/processed/cleaned_bike_trips.csv` for the dataset
+3. **Explore Data**: Raw and cleaned check [[https://drive.google.com/drive/folders/1mjXW9sPf039iPL2UiyN6u5nfKfvjBBOP?usp=sharing] for the dataset
 
 ## Files You'll Find
 - `cyclistic_analysis.Rmd` - Main analysis document with code
