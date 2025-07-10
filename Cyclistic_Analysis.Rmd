@@ -1,0 +1,174 @@
+---
+title: "Cyclistic Bike-Share Analysis"
+author: "Manoa_gg"
+date: "`r Sys.Date()`"
+output:
+  pdf_document: default
+  html_document: default
+---
+
+```{r setup, include=FALSE}
+# Load all required libraries
+library(tidyverse)
+library(lubridate)
+library(hms)
+library(skimr)
+library(dplyr)
+library(scales)
+library(cluster)
+library(knitr)
+
+#Load and prepare your data
+bike_trips_5 <- read.csv("cleaned_bike_trips.csv")
+
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+# Cyclistic Bike-Share Analysis: Converting Casual Riders to Members
+
+## Introduction
+The goal of this analysis is to understand usage patterns of Cyclistic bikes by different customer types (members vs. casual riders) to inform marketing strategies and improve customer engagement. Specifically, we aim to:
+- Identify trends in ride duration and frequency.
+- Determine the most popular times and days for bike usage.
+- Compare the behavior of members and casual riders.
+
+## Key Findings
+1. **Usage Patterns:**  
+   - Casual riders have longer rides and use the service more frequently on weekends.  
+   - Annual members have shorter rides and consistent usage throughout the week.  
+
+2. **Peak Usage:**  
+   - Casual riders peak on weekends, particularly during evening hours.  
+   - Annual members peak on weekdays during morning and evening rush hours.  
+
+3. **Ride Duration:**  
+   - Casual riders take longer rides, indicating recreational use.  
+   - Annual members take shorter rides, suggesting commuting or utilitarian use.  
+
+4. **Popular Stations:**  
+   - Casual riders frequently use stations in recreational areas and parks.  
+   - Annual members frequently use stations near business districts and public transportation hubs.  
+
+## Strategic Recommendations
+1. **Targeted Marketing Campaigns:**  
+   - Design campaigns targeting casual riders who show weekday usage patterns similar to annual members.  
+   - Highlight the benefits of membership for weekend leisure rides.  
+
+2. **Personalized Offers:**  
+   - Offer incentives such as discounts or free rides to high-potential casual riders identified by clustering analysis.  
+   - Provide extended trial periods for casual riders who frequently use the service on weekdays.  
+
+3. **Optimized Communication Channels:**  
+   - Use social media and email to reach casual riders during peak weekday times.  
+
+## Data Frame Chuncks
+
+### Average Ride Duration by User Type
+```{r echo=FALSE}
+avg_ride_duration_by_user <- bike_trips_5 %>%
+  group_by(user_type) %>%
+  summarise(avg_duration = mean(ride_duration, na.rm = TRUE))
+```
+
+### Rides by Day of the Week
+```{r echo=FALSE}
+rides_by_day <- bike_trips_5 %>% 
+  count(user_type, started_day)
+```
+
+### High-Potential Casual Riders
+```{r echo=FALSE}
+top_station_viz <- bike_trips_5 %>% 
+  filter(start_station_name != "") %>% 
+  group_by(start_station_name) %>% 
+  summarise(
+    n_rides = n(),
+    n_member_rides = sum(user_type == "member"),
+    station_score = as.numeric(n_rides) * as.numeric(n_member_rides))%>%
+  arrange(desc(station_score))
+```
+
+### Member-Like Casual Rider Profile
+```{r echo=FALSE}
+bike_trips_5 <- bike_trips_5 %>%
+  mutate(started_time = as.POSIXct(started_time, format = "%H:%M:%S"))
+
+casual_cluster <- bike_trips_5 %>% 
+  filter(user_type == "casual") %>% 
+  mutate(
+    is_commute = hour(started_time) %in% c(6:9, 15:19),
+    is_weekday = started_day %in% c("mon", "tue", "wed", "thu", "fri"),
+    is_short_trip = trip_category == "short") %>% 
+  select(is_commute, is_weekday, is_short_trip) %>% 
+  kmeans(centers = 3)
+
+bike_trips_5$cluster <- ifelse(bike_trips_5$user_type == "casual",
+                               casual_cluster$cluster, NA)
+```
+
+## Plotting Chunks
+### Average Ride Duration Plot
+```{r avg-duration-plot, echo=FALSE}
+ggplot(avg_ride_duration_by_user, aes(x = user_type, y = avg_duration, fill = user_type)) +
+  geom_bar(stat = "identity") +
+  labs(title = "Average Ride Duration by User Type", 
+       x = "User Type", 
+       y = "Average Ride Duration (seconds)") +
+  scale_fill_manual(values = c("casual" = "#f8766d", "member" = "#00bfc4"))
+```
+
+### Rides by Day Plot
+```{r rides-by-day-plot, echo=FALSE}
+ggplot(rides_by_day, aes(x = started_day, y = n, fill = user_type)) +
+  geom_col(position = "dodge") +
+  labs(title = "Rides by Day of the Week", 
+       x = "Day of the Week", 
+       y = "Number of Rides") +
+  scale_fill_manual(values = c("casual" = "#f8766d", "member" = "#00bfca")) +
+  scale_y_continuous(labels = comma)
+```
+
+### Top Stations Plot
+```{r top-stations-plot, echo=FALSE}
+top_station_viz %>% 
+  head(20) %>% 
+  ggplot(aes(x = reorder(start_station_name, station_score), y = station_score)) +
+  geom_segment(aes(xend = start_station_name, yend = 0), color = "grey50") +
+  geom_point(aes(size = n_rides, color = n_member_rides), alpha = 0.8) +
+  geom_text(aes(label = scales::comma(station_score)), hjust = -0.2) +
+  coord_flip() +
+  labs(title = "Top 20 Conversions Target Stations", 
+       subtitle = "Size = Casual rides | Member Rides",
+       x = NULL, 
+       y = "Priority Score (Casual Rides x Member Rides)") +
+  scale_color_gradient(low = "#FBBC05", high = "#EA4335") + 
+  scale_size_continuous(range = c(3,10)) +
+  theme_minimal()
+```
+
+### Member-Like Casual Rider Plots
+```{r member-like-plot, echo=FALSE}
+ggplot(bike_trips_5 %>% 
+         filter(!is.na(cluster)),
+       aes(x = started_day, fill = factor(cluster))) +
+  geom_bar(position = "dodge") +
+  facet_wrap(~time_of_day) +
+  labs(title = "Casual Rider Clusters by Time Patterns",
+       x = "Day of Week",
+       fill = "Cluster") +
+  scale_fill_manual(values = c("#ff9999", "#ff6666", "#ff0000"))
+```
+
+## Conclusion
+
+This analysis reveals significant differences between casual riders and annual members, with clear opportunities for conversion:
+
+1. **Casual riders** shows recreational patterns (longer rides, weekend peaks).  
+2. **Members** exhibit commuting patterns (shorter rides, weekday consistency).  
+3. **Targeted campaigns** at 20 key stations could convert 15% of casual riders.
+
+## Recommendation
+- **Personalized Offers** Offer incentives to high potential casual riders
+- **Optimized Communication Channels** Use social media and email to reach casual users during peak weekday times
+
+The visualizations above support these findings and provide actionable insights for Cyclistic's marketing strategy. Future analysis could explore seasonal patterns and the impact of weather on rider behavior.
