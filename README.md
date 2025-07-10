@@ -45,7 +45,7 @@ This project analyzes Cyclistic bike-share usage patterns to understand how casu
 - `data/processed/cleaned_bike_trips.csv` - Cleaned dataset
 
 ## What I Learned
-- How to clean and analyze large datasets (1.2M+ records)
+- How to clean and analyze large datasets (4M+ records)
 - How to create professional data visualizations
 - How to turn data insights into business recommendations
 - How to document my analysis process clearly
