@@ -6,10 +6,10 @@ This project analyzes Cyclistic bike-share usage patterns to understand how casu
 ## Why This Project Matters
 - **Business Problem**: Cyclistic wants to increase annual memberships (they're more profitable)
 - **My Role**: Junior Data Analyst identifying conversion opportunities
-- **Impact**: Found potential to convert 15% of casual riders, worth ~$3.1M annually
+- **Impact**: Found potential to convert 15% of casual riders
 
 ## What I Did
-1. **Data Cleaning**: Processed 6 months of bike trip data (1.2M+ records)
+1. **Data Cleaning**: Processed 6 months of bike trip data (4M+ records)
 2. **Analysis**: Compared usage patterns between casual riders and members
 3. **Visualization**: Created charts showing key differences
 4. **Recommendations**: Suggested targeted marketing campaigns
