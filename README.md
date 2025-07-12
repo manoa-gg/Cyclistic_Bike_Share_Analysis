@@ -36,7 +36,7 @@ This project analyzes Cyclistic bike-share usage patterns to understand how casu
 ## How to Use This Repository
 1. **View the Analysis**: Open `cyclistic_analysis.html` for the complete report
 2. **Run the Code**: Open `cyclistic_analysis.Rmd` in RStudio and click "Knit"
-3. **Explore Data**: [Raw and cleaned] (https://drive.google.com/drive/folders/1mjXW9sPf039iPL2UiyN6u5nfKfvjBBOP?usp=sharing) to access dataset
+3. **Explore Data**: [Raw and cleaned](https://drive.google.com/drive/folders/1mjXW9sPf039iPL2UiyN6u5nfKfvjBBOP?usp=sharing) to access dataset
 
 ## Files You'll Find
 - `cyclistic_analysis.Rmd` - Main analysis document with code
@@ -59,9 +59,9 @@ This project analyzes Cyclistic bike-share usage patterns to understand how casu
 Junior Data Analyst passionate about using data to solve business problems. This project demonstrates my skills in data cleaning, analysis, visualization, and business communication.
 
 ## Connect With Me
-- LinkedIn: [manoa_gg] (www.linkedin.com/in/manoagg)
-- GitHub: [manoa_gg] (https://github.com/manoa-gg)
-- Email: [manoa_gg] (giovanny.manoa@gmail.com)
+- LinkedIn: [manoa_gg](www.linkedin.com/in/manoagg)
+- GitHub: [manoa_gg](https://github.com/manoa-gg)
+- Email: [manoa_gg](giovanny.manoa@gmail.com)
 
 ---
 *This project was completed as part of my journey to become a data analyst. I'm always learning and improving!*
